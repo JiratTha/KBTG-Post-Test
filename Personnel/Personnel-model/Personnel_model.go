@@ -12,10 +12,8 @@ type Personnel struct {
 }
 
 type Allowance struct {
-	Allowances []struct {
-		AllowanceType string  `db:"allowancetype"`
-		Amount        float64 `db:"amount"`
-	} `db:"allowances"`
+	AllowanceType string  `db:"allowance_type"`
+	Amount        float64 `db:"amount"`
 }
 
 type PersonnelDataProvider interface {
@@ -46,7 +44,7 @@ func GetPersonnelData(provider PersonnelDataProvider) (Personnel, error) {
 
 func GetAllowanceData() ([]Allowance, error) {
 	var allowances []Allowance
-	err := db.Select(&allowances, `SELECT allowancetype , amount  FROM allowance."allowance"`)
+	err := db.Select(&allowances, `SELECT allowance_type , amount  FROM project1."allowance"`)
 	if err != nil {
 		log.Println(err)
 		return nil, err
