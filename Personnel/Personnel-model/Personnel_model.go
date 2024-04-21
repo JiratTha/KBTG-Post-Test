@@ -1,9 +1,7 @@
 package Personnel_model
 
 import (
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq" // Import the PostgreSQL driver
-	"log"
+	"github.com/JiratTha/assessment-tax/db"
 )
 
 type Personnel struct {
@@ -27,26 +25,15 @@ func (u Personnel) GetData() (Personnel, error) {
 	}, nil
 }
 
-var db *sqlx.DB
-
-func InitDB(dataSourceName string) error {
-	var err error
-	db, err = sqlx.Connect("postgres", dataSourceName)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func GetPersonnelData(provider PersonnelDataProvider) (Personnel, error) {
+
 	return provider.GetData()
 }
 
 func GetAllowanceData() ([]Allowance, error) {
 	var allowances []Allowance
-	err := db.Select(&allowances, `SELECT allowance_type , amount  FROM project1."allowance"`)
+	err := db.DB.Select(&allowances, `SELECT allowance_type , amount  FROM project1."allowance"`)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	return allowances, nil

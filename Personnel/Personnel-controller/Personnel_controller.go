@@ -6,12 +6,16 @@ import (
 	"net/http"
 )
 
-// GetPersonnel handles the GET users route
 func GetPersonnel(c echo.Context) error {
-	// Call the GetPersonnel function from the Personnel_model package
+	req := new(Personnel_model.Personnel)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid request body")
+	}
+
+	// Call the GetPersonnelData function from the Personnel_model package with user input
 	personnel, err := Personnel_model.GetPersonnelData(Personnel_model.Personnel{
-		TotalIncome: 0,
-		Wht:         0,
+		TotalIncome: req.TotalIncome,
+		Wht:         req.Wht,
 	})
 
 	if err != nil {
