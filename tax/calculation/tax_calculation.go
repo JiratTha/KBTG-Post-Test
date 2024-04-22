@@ -6,7 +6,6 @@ import (
 )
 
 func TaxCalculation(totalIncome float64) (taxAmount Personnel_model.TaxResponse) {
-
 	taxAmount = Personnel_model.TaxResponse{}
 	var PersonnelDeduction = 60000.0
 	totalIncome -= PersonnelDeduction
