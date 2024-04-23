@@ -32,5 +32,6 @@ func GetAllowanceData() ([]Allowance, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return allowances, nil
 }

@@ -8,12 +8,12 @@ import (
 )
 
 func TaxCalculationsPost(c echo.Context) error {
-
 	var personnelIncome struc.Personnel
 	if err := c.Bind(&personnelIncome); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
+	allowance, _, _ := calculation.AllowanceCalculation(personnelIncome)
+	personnelIncome.TotalIncome -= allowance
 	totalTax := calculation.TaxCalculation(personnelIncome.TotalIncome, personnelIncome.Wht)
-
 	return c.JSON(http.StatusOK, totalTax)
 }
