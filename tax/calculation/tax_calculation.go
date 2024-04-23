@@ -2,13 +2,15 @@ package calculation
 
 import (
 	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/Personnel-model"
+	"github.com/JiratTha/assessment-tax/db"
 	_ "github.com/JiratTha/assessment-tax/db"
 )
 
 func TaxCalculation(totalIncome float64) (taxAmount Personnel_model.TaxResponse) {
 	taxAmount = Personnel_model.TaxResponse{}
-	var PersonnelDeduction = 60000.0
-	totalIncome -= PersonnelDeduction
+	var personnelDeduction float64
+	_ = db.DB.Get(&personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
+	totalIncome -= personnelDeduction
 	if totalIncome <= 150000.0 {
 		taxAmount.Tax = 0.0
 	} else if totalIncome <= 500000.0 {
