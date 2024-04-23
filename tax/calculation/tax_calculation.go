@@ -6,7 +6,7 @@ import (
 	_ "github.com/JiratTha/assessment-tax/db"
 )
 
-func TaxCalculation(totalIncome float64) (taxAmount Personnel_model.TaxResponse) {
+func TaxCalculation(totalIncome float64, wht float64) (taxAmount Personnel_model.TaxResponse) {
 	taxAmount = Personnel_model.TaxResponse{}
 	var personnelDeduction float64
 	_ = db.DB.Get(&personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
@@ -22,6 +22,10 @@ func TaxCalculation(totalIncome float64) (taxAmount Personnel_model.TaxResponse)
 	} else {
 		taxAmount.Tax = 310000 + ((totalIncome - 2000000) * 0.35)
 	}
-
+	taxAmount.Tax -= wht
+	if taxAmount.Tax < 0 {
+		taxAmount.Refund = -taxAmount.Tax
+		taxAmount.Tax = 0
+	}
 	return taxAmount
 }
