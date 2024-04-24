@@ -12,6 +12,9 @@ func TaxCalculationsPost(c echo.Context) error {
 	if err := c.Bind(&personnelIncome); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
+	if personnelIncome.TotalIncome < 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Total Income must be greater than zero")
+	}
 	allowance, _, _ := calculation.AllowanceCalculation(personnelIncome)
 	personnelIncome.TotalIncome -= allowance
 	totalTax := calculation.TaxCalculation(personnelIncome.TotalIncome, personnelIncome.Wht)

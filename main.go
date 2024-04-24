@@ -1,7 +1,6 @@
 package main
 
 import (
-	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/Personnel-model"
 	"github.com/JiratTha/assessment-tax/db"
 	"github.com/JiratTha/assessment-tax/router"
 	"github.com/labstack/echo/v4"
@@ -22,10 +21,10 @@ func main() {
 			e.Logger.Fatal("Error fetching allowance:", err)
 		}
 		// Fetch allowance data after initializing the database
-		allowance, err := Personnel_model.GetAllowanceData()
-		if err != nil {
-			e.Logger.Fatal("Error fetching allowance:", allowance)
-		}
+		//allowance, err := Personnel_model.GetAllowanceData()
+		//if err != nil {
+		//	e.Logger.Fatal("Error fetching allowance:", allowance)
+		//}
 	}
 
 	PORT := os.Getenv("PORT")
