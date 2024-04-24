@@ -1,4 +1,4 @@
-package Personnel_model
+package model
 
 type Personnel struct {
 	TotalIncome float64     `json:"totalIncome"`

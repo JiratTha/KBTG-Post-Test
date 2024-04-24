@@ -1,4 +1,4 @@
-package Personnel_model
+package model
 
 type TaxResponse struct {
 	Tax      float64    `json:"tax"`

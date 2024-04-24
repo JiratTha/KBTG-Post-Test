@@ -1,7 +1,7 @@
 package tax_controller
 
 import (
-	struc "github.com/JiratTha/assessment-tax/Personnel/Personnel-model"
+	struc "github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/tax/calculation"
 	"github.com/labstack/echo/v4"
 	"net/http"
