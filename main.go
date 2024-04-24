@@ -11,20 +11,14 @@ import (
 
 func main() {
 	e := echo.New()
-	// Use environment variables for database connection
+	// ใช้ environment variables for database connection
 	DatabaseUrl := os.Getenv("DatabaseUrl")
 	if DatabaseUrl == "" {
 		DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
-		// Initialize the database
 		err := db.InitDB(DatabaseUrl)
 		if err != nil {
 			e.Logger.Fatal("Error fetching allowance:", err)
 		}
-		// Fetch allowance data after initializing the database
-		//allowance, err := Personnel_model.GetAllowanceData()
-		//if err != nil {
-		//	e.Logger.Fatal("Error fetching allowance:", allowance)
-		//}
 	}
 
 	PORT := os.Getenv("PORT")
