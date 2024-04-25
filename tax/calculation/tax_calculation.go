@@ -5,7 +5,7 @@ import (
 	"github.com/JiratTha/assessment-tax/db"
 )
 
-// ตำนวณผลรวม allowance , เเยกประเภท Allowance เเละ Limit ค่า allowance สูงสุดโดยเก็บค่าไว้ที่ database
+// AllowanceCalculation calculate total allowance , seperate Allowance type and Limit max allowance amount by database
 func AllowanceCalculation(allowance Personnel_model.Personnel) (totalAllowance float64, totalDonation float64, totalKreciept float64) {
 	var allowanceAmountDomation Personnel_model.Allowance
 	var allowanceAmountKreceipt Personnel_model.Allowance
@@ -36,7 +36,7 @@ func AllowanceCalculation(allowance Personnel_model.Personnel) (totalAllowance f
 	return totalAllowance, donationAmount, krecieptAmount
 }
 
-// สูตรคำนวนภาษี , รับค่า Personnel deduction จาก database
+// TaxCalculation calculate tax , receive Personnel deduction from database
 func TaxCalculation(totalIncome float64, wht float64) (taxResponse Personnel_model.TaxResponse) {
 	taxAmount := Personnel_model.TaxLevel{}
 	var personnelDeduction float64
