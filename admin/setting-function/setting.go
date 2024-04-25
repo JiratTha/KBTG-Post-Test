@@ -1,7 +1,7 @@
-package setting
+package setting_function
 
 import (
-	"github.com/JiratTha/assessment-tax/Personnel/model"
+	"github.com/JiratTha/assessment-tax/admin/model"
 	"github.com/JiratTha/assessment-tax/db"
 	"log"
 )

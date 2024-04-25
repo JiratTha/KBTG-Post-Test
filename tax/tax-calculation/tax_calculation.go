@@ -1,8 +1,9 @@
-package calculation
+package tax_calculation
 
 import (
 	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/db"
+	"github.com/JiratTha/assessment-tax/tax/model"
 )
 
 // AllowanceCalculation calculate total allowance , seperate Allowance type and Limit max allowance amount by database
@@ -37,15 +38,15 @@ func AllowanceCalculation(allowance Personnel_model.Personnel) (totalAllowance f
 }
 
 // TaxCalculation calculate tax , receive Personnel deduction from database
-func TaxCalculation(totalIncome float64, wht float64) (taxResponse Personnel_model.TaxResponse) {
-	taxAmount := Personnel_model.TaxLevel{}
+func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) {
+	taxAmount := model.TaxLevel{}
 	var personnelDeduction float64
 	_ = db.DB.Get(&personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
 	totalIncome -= personnelDeduction
-	response := Personnel_model.TaxResponse{
+	response := model.TaxResponse{
 		Tax:    taxAmount.Tax,
 		Refund: taxAmount.Refund,
-		TaxLevel: []Personnel_model.TaxLevel{
+		TaxLevel: []model.TaxLevel{
 			{Level: "0-150,000", Tax: 0.0},
 			{Level: "150,001-500,000", Tax: 0.0},
 			{Level: "500,001-1,000,000", Tax: 0.0},
