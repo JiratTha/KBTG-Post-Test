@@ -9,4 +9,5 @@ import (
 func InitRoutes(e *echo.Echo) {
 	e.POST("/tax/calculations", tax_controller.TaxCalculationsPost)
 	e.POST("/admin/deductions/personal", admin_controller.SetPersonnelDeductPost)
+	e.POST("/admin/deductions/k-receipt", admin_controller.SetKReceiptPost)
 }
