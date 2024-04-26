@@ -1,10 +1,9 @@
-package test
+package tax_calculation
 
 import (
 	"encoding/json"
 	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/tax/model"
-	tax_calculation "github.com/JiratTha/assessment-tax/tax/tax-calculation"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,7 +44,7 @@ func TestTaxCalculation(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Scenario 2: Total income between 150001 and 500000 with allowances",
+			name: "Scenario 2: Total income between 150001 and 500000 ",
 			input: `{
 				"totalIncome": 500000.0,
 				"wht": 0.0,
@@ -119,8 +118,8 @@ func TestTaxCalculation(t *testing.T) {
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
 					{"level": "150,001-500,000", "tax": 35000.0},
-					{"level": "500,001-1,000,000", "tax": 110000.0},
-					{"level": "1,000,001-2,000,000", "tax": 373000.0},
+					{"level": "500,001-1,000,000", "tax": 75000.0},
+					{"level": "1,000,001-2,000,000", "tax": 188000.0},
 					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
 				]
 			}`,
@@ -128,7 +127,7 @@ func TestTaxCalculation(t *testing.T) {
 		{
 			name: "Scenario 5: Total income more than 2000001",
 			input: `{
-				"totalIncome": 2000001.0,
+				"totalIncome": 2060005.0,
 				"wht": 0.0,
 				"allowances": [
 					{
@@ -146,13 +145,95 @@ func TestTaxCalculation(t *testing.T) {
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
 					{"level": "150,001-500,000", "tax": 35000.0},
-					{"level": "500,001-1,000,000", "tax": 110000.0},
-					{"level": "1,000,001-2,000,000", "tax": 373000.0},
+					{"level": "500,001-1,000,000", "tax": 75000.0},
+					{"level": "1,000,001-2,000,000", "tax": 200000.0},
+					{"level": "2,000,001 ขึ้นไป", "tax": 1.75}
+				]
+			}`,
+		},
+		{
+			name: "Scenario 6: Total income between 150001 and 500000 with wht",
+			input: `{
+				"totalIncome": 500000.0,
+				"wht": 30000.0,
+				"allowances": [
+					{
+						"allowanceType": "k-receipt",
+						"amount": 0.0
+					},
+					{
+						"allowanceType": "donation",
+						"amount": 0.0
+					}
+				]
+			}`,
+			expected: `{
+				"tax": 0.0,
+				"taxRefund ": 1000,
+				"taxLevel": [
+					{"level": "0-150,000", "tax": 0.0},
+					{"level": "150,001-500,000", "tax": 29000.0},
+					{"level": "500,001-1,000,000", "tax": 0.0},
+					{"level": "1,000,001-2,000,000", "tax": 0.0},
 					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
 				]
 			}`,
 		},
-		// Add more test cases for other scenarios as needed
+		{
+			name: "Scenario 7: Total income between 150001 and 500000 with allowance more than limit",
+			input: `{
+				"totalIncome": 500000.0,
+				"wht": 0.0,
+				"allowances": [
+					{
+						"allowanceType": "k-receipt",
+						"amount": 100000.0
+					},
+					{
+						"allowanceType": "donation",
+						"amount": 200000.0
+					}
+				]
+			}`,
+			expected: `{
+				"tax": 0.0,
+				"taxLevel": [
+					{"level": "0-150,000", "tax": 0.0},
+					{"level": "150,001-500,000", "tax": 14000.0},
+					{"level": "500,001-1,000,000", "tax": 0.0},
+					{"level": "1,000,001-2,000,000", "tax": 0.0},
+					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
+				]
+			}`,
+		},
+		{
+			name: "Scenario 7: Total income between 150001 and 500000 with wht and allowance more than limit ",
+			input: `{
+				"totalIncome": 500000.0,
+				"wht": 20000.0,
+				"allowances": [
+					{
+						"allowanceType": "k-receipt",
+						"amount": 100000.0
+					},
+					{
+						"allowanceType": "donation",
+						"amount": 200000.0
+					}
+				]
+			}`,
+			expected: `{
+				"tax": 0.0,
+				"taxRefund ": 6000,
+				"taxLevel": [
+					{"level": "0-150,000", "tax": 0.0},
+					{"level": "150,001-500,000", "tax": 14000.0},
+					{"level": "500,001-1,000,000", "tax": 0.0},
+					{"level": "1,000,001-2,000,000", "tax": 0.0},
+					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
+				]
+			}`,
+		},
 	}
 
 	// Run test cases
@@ -168,7 +249,7 @@ func TestTaxCalculation(t *testing.T) {
 				t.Fatalf("failed to unmarshal expected response: %v", err)
 			}
 
-			actualResponse := tax_calculation.TaxCalculation(requestBody.TotalIncome, requestBody.Wht)
+			actualResponse := TaxCalculation(requestBody.TotalIncome, requestBody.Wht)
 
 			assert.Equal(t, expectedResponse, actualResponse, "Response does not match expected")
 		})
