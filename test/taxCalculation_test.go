@@ -45,7 +45,7 @@ func TestTaxCalculation(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Scenario 2: Total income less than or equal to 500000",
+			name: "Scenario 2: Total income between 150001 and 500000 with allowances",
 			input: `{
 				"totalIncome": 500000.0,
 				"wht": 0.0,
@@ -61,10 +61,10 @@ func TestTaxCalculation(t *testing.T) {
 				]
 			}`,
 			expected: `{
-				"tax": 15000.0,
+				"tax": 29000.0,
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
-					{"level": "150,001-500,000", "tax": 15000.0},
+					{"level": "150,001-500,000", "tax": 29000.0},
 					{"level": "500,001-1,000,000", "tax": 0.0},
 					{"level": "1,000,001-2,000,000", "tax": 0.0},
 					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
@@ -74,26 +74,80 @@ func TestTaxCalculation(t *testing.T) {
 		{
 			name: "Scenario 3: Total income between 500001 and 1000000",
 			input: `{
-				"totalIncome": 800000.0,
+				"totalIncome": 1000000.0,
 				"wht": 0.0,
 				"allowances": [
 					{
 						"allowanceType": "k-receipt",
-						"amount": 50000.0
+						"amount": 0.0
 					},
 					{
 						"allowanceType": "donation",
-						"amount": 20000.0
+						"amount": 0.0
 					}
 				]
 			}`,
 			expected: `{
-				"tax": 85000.0,
+				"tax": 101000.0,
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
-					{"level": "150,001-500,000", "tax": 15000.0},
-					{"level": "500,001-1,000,000", "tax": 70000.0},
+					{"level": "150,001-500,000", "tax": 35000.0},
+					{"level": "500,001-1,000,000", "tax": 66000.0},
 					{"level": "1,000,001-2,000,000", "tax": 0.0},
+					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
+				]
+			}`,
+		},
+		{
+			name: "Scenario 4: Total income between 1000000 and 2000000",
+			input: `{
+				"totalIncome": 2000000.0,
+				"wht": 0.0,
+				"allowances": [
+					{
+						"allowanceType": "k-receipt",
+						"amount": 0.0
+					},
+					{
+						"allowanceType": "donation",
+						"amount": 0.0
+					}
+				]
+			}`,
+			expected: `{
+				"tax": 298000.0,
+				"taxLevel": [
+					{"level": "0-150,000", "tax": 0.0},
+					{"level": "150,001-500,000", "tax": 35000.0},
+					{"level": "500,001-1,000,000", "tax": 110000.0},
+					{"level": "1,000,001-2,000,000", "tax": 373000.0},
+					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
+				]
+			}`,
+		},
+		{
+			name: "Scenario 5: Total income more than 2000001",
+			input: `{
+				"totalIncome": 2000001.0,
+				"wht": 0.0,
+				"allowances": [
+					{
+						"allowanceType": "k-receipt",
+						"amount": 0.0
+					},
+					{
+						"allowanceType": "donation",
+						"amount": 0.0
+					}
+				]
+			}`,
+			expected: `{
+				"tax": 298000.0,
+				"taxLevel": [
+					{"level": "0-150,000", "tax": 0.0},
+					{"level": "150,001-500,000", "tax": 35000.0},
+					{"level": "500,001-1,000,000", "tax": 110000.0},
+					{"level": "1,000,001-2,000,000", "tax": 373000.0},
 					{"level": "2,000,001 ขึ้นไป", "tax": 0.0}
 				]
 			}`,
