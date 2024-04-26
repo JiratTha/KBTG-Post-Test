@@ -11,7 +11,7 @@ import (
 
 func main() {
 	e := echo.New()
-	// ใช้ environment variables for database connection
+
 	DatabaseUrl := os.Getenv("DatabaseUrl")
 	if DatabaseUrl == "" {
 		DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
