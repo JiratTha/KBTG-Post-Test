@@ -2,7 +2,7 @@ package tax_controller
 
 import (
 	struc "github.com/JiratTha/assessment-tax/Personnel/model"
-	"github.com/JiratTha/assessment-tax/tax/calculation"
+	"github.com/JiratTha/assessment-tax/tax/tax-calculation"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -25,8 +25,8 @@ func TaxCalculationsPost(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Allowance Amount must be greater than zero")
 		}
 	}
-	allowance, _, _ := calculation.AllowanceCalculation(personal)
+	allowance, _, _ := tax_calculation.AllowanceCalculation(personal)
 	personal.TotalIncome -= allowance
-	totalTax := calculation.TaxCalculation(personal.TotalIncome, personal.Wht)
+	totalTax := tax_calculation.TaxCalculation(personal.TotalIncome, personal.Wht)
 	return c.JSON(http.StatusOK, totalTax)
 }
