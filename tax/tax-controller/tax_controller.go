@@ -20,4 +20,5 @@ func TaxCalculationsPost(c echo.Context) error {
 	personnelIncome.TotalIncome -= allowance
 	totalTax := calculation.TaxCalculation(personnelIncome.TotalIncome, personnelIncome.Wht)
 	return c.JSON(http.StatusOK, totalTax)
+
 }
