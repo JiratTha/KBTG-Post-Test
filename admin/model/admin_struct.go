@@ -6,5 +6,5 @@ type Admin struct {
 
 type AdminResponse struct {
 	PersonalDeduction float64 `db:"personnel_deduction" json:"personalDeduction ,omitempty"`
-	Kreceipt          float64 `db:"k-receipt" json:"kReceipt ,omitempty"`
+	KReceipt          float64 `db:"k-receipt" json:"kReceipt ,omitempty"`
 }
