@@ -7,12 +7,12 @@ import (
 )
 
 // SettingPersonnelDeduction function for admin set new personal deduction and cannot set more than 100,000
-func SettingPersonnelDeduction(personnelDeduction model.Admin) (newPersonnelDeduction model.AdminResponse) {
+func SettingPersonnelDeduction(personnelDeduction model.Admin) (newPersonnelDeduct model.AdminResponse) {
 	var personnelDeduct model.Admin
 	err := db.DB.Get(&personnelDeduct, `SELECT amount FROM project1."personnel_deduction" WHERE personnel_deduction='personnelDeduction'`)
 	if err != nil {
 		log.Println(err)
-		return newPersonnelDeduction
+		return newPersonnelDeduct
 	}
 	if personnelDeduction.Amount > 100000.0 {
 		personnelDeduct.Amount = 100000.0
@@ -22,8 +22,8 @@ func SettingPersonnelDeduction(personnelDeduction model.Admin) (newPersonnelDedu
 	_, err = db.DB.Exec(`UPDATE project1."personnel_deduction" SET amount=$1 WHERE personnel_deduction='personnelDeduction'`, personnelDeduct.Amount)
 	if err != nil {
 
-		return newPersonnelDeduction
+		return newPersonnelDeduct
 	}
-	newPersonnelDeduction.PersonalDeduction = personnelDeduct.Amount
-	return newPersonnelDeduction
+	newPersonnelDeduct.PersonalDeduction = personnelDeduct.Amount
+	return newPersonnelDeduct
 }

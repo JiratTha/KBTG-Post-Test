@@ -2,8 +2,6 @@ package tax_controller
 
 import (
 	"encoding/csv"
-	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
-	"github.com/JiratTha/assessment-tax/db"
 	struc "github.com/JiratTha/assessment-tax/tax/model"
 	tax_calculation "github.com/JiratTha/assessment-tax/tax/tax-calculation"
 	"github.com/labstack/echo/v4"
@@ -47,14 +45,11 @@ func TaxCalculationCSVPost(c echo.Context) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid input value")
 		}
-		var personalDeduction float64
-		var allowanceAmountDomation Personnel_model.Allowance
-		_ = db.DB.Get(&personalDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
-		_ = db.DB.Get(&allowanceAmountDomation, `SELECT  amount FROM project1."allowance" WHERE allowance_type=$1`, "donation")
-		//personalDeduct, _ := model.GetPersonalDeduct()
-		//donationDeduct, _ := model.GetDonationDeduct()
-		totalIncomeDeductPersonal := totalIncome - personalDeduction
-		totalIncomeDeductDonation := totalIncomeDeductPersonal - allowanceAmountDomation.Amount
+
+		if donation > 100000 {
+			donation = 100000
+		}
+		totalIncomeDeductDonation := totalIncome - donation
 		tax := tax_calculation.TaxCalculation(totalIncomeDeductDonation, wht)
 
 		taxes = append(
@@ -62,11 +57,12 @@ func TaxCalculationCSVPost(c echo.Context) error {
 			struc.TaxResponseCSVDataStruct{
 				TotalIncomeCSV: totalIncome,
 				TaxCSV:         tax.Tax,
+				TaxRefund:      tax.Refund,
 			},
 		)
 
 		loopNumber += 1
 	}
 
-	return c.JSON(http.StatusOK, struc.TaxResponseCSVStruct{Taxes: taxes})
+	return c.JSON(http.StatusOK, struc.TaxResponseCSVStruct{TaxesCSV: taxes})
 }

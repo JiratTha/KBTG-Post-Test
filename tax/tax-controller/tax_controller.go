@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-// TaxCalculationsPost using TaxCalculation and AllowanceCalculation
 func TaxCalculationsPost(c echo.Context) error {
 	var personnelIncome struc.Personnel
 	if err := c.Bind(&personnelIncome); err != nil {

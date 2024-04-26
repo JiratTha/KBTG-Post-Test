@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-// SetPersonnelDeductPost using SettingPersonnelDeduction
 func SetPersonnelDeductPost(c echo.Context) error {
 	var admin struc.Admin
 	if err := c.Bind(&admin); err != nil {
