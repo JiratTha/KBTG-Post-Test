@@ -1,8 +1,8 @@
 package admin_controller
 
 import (
-	struc "github.com/JiratTha/assessment-tax/Personnel/model"
-	"github.com/JiratTha/assessment-tax/admin/setting"
+	struc "github.com/JiratTha/assessment-tax/admin/model"
+	"github.com/JiratTha/assessment-tax/admin/setting-function"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
