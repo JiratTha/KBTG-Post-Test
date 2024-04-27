@@ -2,15 +2,25 @@ package tax_calculation
 
 import (
 	"encoding/json"
-	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
+	"github.com/JiratTha/assessment-tax/db"
 	"github.com/JiratTha/assessment-tax/tax/model"
+	Personnel_model "github.com/JiratTha/assessment-tax/tax/personal"
+	"log"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTaxCalculation(t *testing.T) {
-	// Define test cases
+	DatabaseUrl := os.Getenv("DatabaseUrl")
+	if DatabaseUrl == "" {
+		DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
+		err := db.InitDB(DatabaseUrl)
+		if err != nil {
+			log.Fatal("Error fetching allowance:", err)
+		}
+	}
 	testCases := []struct {
 		name     string
 		input    string

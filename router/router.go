@@ -13,7 +13,7 @@ func InitRoutes(e *echo.Echo) {
 	//Admin controller
 	g := e.Group("/admin")
 	g.Use(middleware.BasicAuthMiddleware)
-	g.POST("/deductions/personal", admin_controller.SetPersonnelDeductPost)
+	g.POST("/deductions/personal", admin_controller.SetPersonalDeductPost)
 	g.POST("/deductions/k-receipt", admin_controller.SetKReceiptPost)
 
 }

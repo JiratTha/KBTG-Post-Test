@@ -5,7 +5,7 @@ import (
 	"github.com/JiratTha/assessment-tax/tax/model"
 )
 
-// TaxCalculation calculate tax , receive Personnel deduction from database
+// TaxCalculation calculate tax , receive personal deduction from database
 func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) {
 	taxAmount := model.TaxLevel{}
 	var personnelDeduction float64

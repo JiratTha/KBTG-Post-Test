@@ -1,0 +1,154 @@
+definitions:
+  model.Admin:
+    properties:
+      amount:
+        minimum: 0
+        type: number
+    type: object
+  model.AdminResponse:
+    properties:
+      kReceipt:
+        minimum: 0
+        type: number
+      personalDeduction:
+        minimum: 0
+        type: number
+    type: object
+  model.TaxLevel:
+    properties:
+      level:
+        type: string
+      tax:
+        type: number
+      taxRefund:
+        type: number
+    type: object
+  model.TaxResponse:
+    properties:
+      tax:
+        type: number
+      taxLevel:
+        items:
+          $ref: '#/definitions/model.TaxLevel'
+        type: array
+      taxRefund:
+        type: number
+    type: object
+  model.TaxResponseCSVDataStruct:
+    properties:
+      tax:
+        minimum: 0
+        type: number
+      taxRefund:
+        minimum: 0
+        type: number
+      totalIncome:
+        minimum: 0
+        type: number
+    type: object
+  model.TaxResponseCSVStruct:
+    properties:
+      taxes:
+        items:
+          $ref: '#/definitions/model.TaxResponseCSVDataStruct'
+        minItems: 0
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/deductions/k-receipt:
+    post:
+      consumes:
+      - application/json
+      description: Set K-receipt. K-receipt must be greater than 0 and cannot greater
+        than 100000
+      parameters:
+      - description: k-receipt Request
+        in: body
+        name: admin_body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Admin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns new k-receipt deduct amount
+          schema:
+            $ref: '#/definitions/model.AdminResponse'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+      summary: Set K-receipt
+      tags:
+      - tax
+  /admin/deductions/personal:
+    post:
+      consumes:
+      - application/json
+      description: Set personal deduction. personal deduction must be greater than
+        10000 and cannot greater than 100000
+      parameters:
+      - description: personal deduct Request
+        in: body
+        name: admin_body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Admin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns new personal deduct amount
+          schema:
+            $ref: '#/definitions/model.AdminResponse'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+      summary: Set personal deduction
+      tags:
+      - tax
+  /tax/calculations:
+    post:
+      consumes:
+      - application/json
+      description: Calculates taxes based on total income, withholding tax, and allowances.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns the calculated tax amount
+          schema:
+            $ref: '#/definitions/model.TaxResponse'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+      summary: Calculate taxes
+      tags:
+      - tax
+  /tax/calculations/upload-csv:
+    post:
+      consumes:
+      - application/json
+      description: Calculates taxes based on total income, withholding tax, and allowances
+        from csv file.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns the calculated tax amount and refund if it has from
+            csv file
+          schema:
+            $ref: '#/definitions/model.TaxResponseCSVStruct'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+      summary: Calculate taxes from upload csv file
+      tags:
+      - tax
+swagger: "2.0"

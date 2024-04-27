@@ -1,7 +1,10 @@
 package allowance_calculation
 
 import (
-	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
+	"github.com/JiratTha/assessment-tax/db"
+	Personnel_model "github.com/JiratTha/assessment-tax/tax/personal"
+	"log"
+	"os"
 	"testing"
 )
 
@@ -15,11 +18,15 @@ func (m *MockDB) Get(dest interface{}, query string, args ...interface{}) error 
 }
 
 func TestAllowanceCalculation(t *testing.T) {
-	// Mocking input data for testing
-	db := &MockDB{}
-	if db != nil {
-		t.Errorf("db is nil")
+	DatabaseUrl := os.Getenv("DatabaseUrl")
+	if DatabaseUrl == "" {
+		DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
+		err := db.InitDB(DatabaseUrl)
+		if err != nil {
+			log.Fatal("Error fetching allowance:", err)
+		}
 	}
+
 	mockAllowance := Personnel_model.Personnel{
 		Allowance: []Personnel_model.Allowance{
 			{AllowanceType: "donation", Amount: 100001.0},
@@ -27,15 +34,12 @@ func TestAllowanceCalculation(t *testing.T) {
 		},
 	}
 
-	// Creating a mock DB instance
-
-	// Testing AllowanceCalculation function
 	totalAllowance, donationAmount, kReceiptAmount := AllowanceCalculation(mockAllowance)
 
 	// Define expected results based on your mock data
 	expectedTotalAllowance := 150000.0
-	expectedDonationAmount := 100001.0 // Limited by database max allowance for donation
-	expectedKReceiptAmount := 50001.0  // Limited by database max allowance for k-receipt
+	expectedDonationAmount := 100000.0 // Limited by database max allowance for donation
+	expectedKReceiptAmount := 50000.0  // Limited by database max allowance for k-receipt
 
 	// Check if the actual results match the expected results
 	if totalAllowance != expectedTotalAllowance {

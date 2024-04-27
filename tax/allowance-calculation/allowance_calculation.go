@@ -1,14 +1,14 @@
 package allowance_calculation
 
 import (
-	"github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/db"
+	"github.com/JiratTha/assessment-tax/tax/personal"
 )
 
 // AllowanceCalculation calculate total allowance , seperate Allowance type and Limit max allowance amount by database
-func AllowanceCalculation(allowance model.Personnel) (totalAllowance float64, totalDonation float64, totalKreciept float64) {
-	var allowanceAmountDonation model.Allowance
-	var allowanceAmountKReceipt model.Allowance
+func AllowanceCalculation(allowance personal.Personnel) (totalAllowance float64, totalDonation float64, totalKreciept float64) {
+	var allowanceAmountDonation personal.Allowance
+	var allowanceAmountKReceipt personal.Allowance
 	var totalAllowanceAmount = 0.0
 	var donationAmount = 0.0
 	var kReceiptAmount = 0.0

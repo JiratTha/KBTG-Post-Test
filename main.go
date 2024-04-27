@@ -2,7 +2,10 @@ package main
 
 import (
 	"github.com/JiratTha/assessment-tax/db"
+	_ "github.com/JiratTha/assessment-tax/docs"
 	"github.com/JiratTha/assessment-tax/router"
+	"github.com/JiratTha/assessment-tax/util"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	echoswagger "github.com/swaggo/echo-swagger"
 	"net/http"
@@ -35,9 +38,9 @@ func main() {
 	if AdminPassword == "" {
 		AdminPassword = "admin!" // Default port if not specified
 	}
+	e.Validator = &util.CustomValidator{Validator: validator.New()}
 
 	router.InitRoutes(e)
-
 	e.GET("/swagger/*", echoswagger.WrapHandler)
 
 	e.GET("/health", func(c echo.Context) error {

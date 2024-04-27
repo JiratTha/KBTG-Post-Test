@@ -1,10 +1,11 @@
 package tax_controller
 
 import (
-	struc "github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/tax/allowance-calculation"
+	struc "github.com/JiratTha/assessment-tax/tax/personal"
 	"github.com/JiratTha/assessment-tax/tax/tax-calculation"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 )
 
@@ -14,15 +15,18 @@ import (
 // @Tags tax
 // @Accept  json
 // @Produce  json
-// @Param   tax_body  body      totalIncome,wht  true  "Tax Calculation Request"
-// @Success 200 {object} _model.TaxResponse  "Returns the calculated tax amount"
+// @Success 200 {object} model.TaxResponse  "Returns the calculated tax amount"
 // @Failure 400 {string} string "Invalid input"
-// @Router /tax/calculations [post]
 // @Router /tax/calculations [post]
 func TaxCalculationsPost(c echo.Context) error {
 	var personal struc.Personnel
 	if err := c.Bind(&personal); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+	}
+	err := c.Validate(personal)
+	if err != nil {
+		log.Println(err.Error())
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	if personal.TotalIncome < 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, "Total Income must be greater than zero")

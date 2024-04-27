@@ -10,6 +10,15 @@ import (
 	"strconv"
 )
 
+// TaxCalculationCSVPost handles the POST /tax/calculations route
+// @Summary Calculate taxes from upload csv file
+// @Description Calculates taxes based on total income, withholding tax, and allowances from csv file.
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.TaxResponseCSVStruct "Returns the calculated tax amount and refund if it has from csv file"
+// @Failure 400 {string} string "Invalid input"
+// @Router /tax/calculations/upload-csv [post]
 func TaxCalculationCSVPost(c echo.Context) error {
 
 	file, err := c.FormFile("taxFile")

@@ -7,16 +7,6 @@ import (
 )
 
 // SettingKReceipt using SetKReceiptPost
-// @Summary SetKReceipt
-// @Description Admin set k-receipt
-// @Tags admin
-// @Accept  json
-// @Produce  json
-// @Param   KReceipt_body  body  _model.Admin  true  "Set k-receipt"
-// @Success 200 {object} _model.AdminResponse  "Returns new k-receipt"
-// @Failure 400 {string} string "err"
-// @Router /deductions/k-receipt [post]
-// @Router /deductions/k-receipt [post]
 func SettingKReceipt(kReceipt model.Admin) (newKReceipt model.AdminResponse) {
 	var kReceiptReq model.Admin
 	if kReceipt.Amount > 100000 {

@@ -16,3 +16,7 @@ func InitDB(dataSourceName string) error {
 	}
 	return nil
 }
+
+func SetDB(database *sqlx.DB) {
+	DB = database
+}
