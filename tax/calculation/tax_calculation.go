@@ -70,15 +70,15 @@ func TaxCalculation(totalIncome float64, wht float64) (taxResponse Personnel_mod
 		taxAmount.Level = "1,000,001-2,000,000"
 		taxAmount.Tax = 110000 + ((totalIncome - 1000000) * 0.2)
 		response.TaxLevel[1].Tax = 35000
-		response.TaxLevel[2].Tax = 110000.0
-		response.TaxLevel[3].Tax = taxAmount.Tax - response.TaxLevel[2].Tax - response.TaxLevel[1].Tax
+		response.TaxLevel[2].Tax = 75000
+		response.TaxLevel[3].Tax = taxAmount.Tax - 110000
 	} else {
 		taxAmount.Level = "2,000,001 ขึ้นไป"
 		taxAmount.Tax = 310000 + ((totalIncome - 2000000) * 0.35)
 		response.TaxLevel[1].Tax = 35000
-		response.TaxLevel[2].Tax = 110000.0
-		response.TaxLevel[3].Tax = 310000.0
-		response.TaxLevel[4].Tax = taxAmount.Tax - response.TaxLevel[3].Tax - response.TaxLevel[2].Tax - response.TaxLevel[1].Tax
+		response.TaxLevel[2].Tax = 75000
+		response.TaxLevel[3].Tax = 200000
+		response.TaxLevel[4].Tax = taxAmount.Tax - 310000
 	}
 	taxAmount.Tax -= wht
 	if taxAmount.Tax < 0 {
