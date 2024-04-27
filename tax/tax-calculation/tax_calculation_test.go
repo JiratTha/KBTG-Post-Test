@@ -3,6 +3,7 @@ package tax_calculation
 import (
 	"encoding/json"
 	"github.com/JiratTha/assessment-tax/db"
+	allowance_calculation "github.com/JiratTha/assessment-tax/tax/allowance-calculation"
 	"github.com/JiratTha/assessment-tax/tax/model"
 	Personnel_model "github.com/JiratTha/assessment-tax/tax/personal"
 	"log"
@@ -151,7 +152,7 @@ func TestTaxCalculation(t *testing.T) {
 				]
 			}`,
 			expected: `{
-				"tax": 298000.0,
+				"tax": 310001.75,
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
 					{"level": "150,001-500,000", "tax": 35000.0},
@@ -206,7 +207,7 @@ func TestTaxCalculation(t *testing.T) {
 				]
 			}`,
 			expected: `{
-				"tax": 0.0,
+				"tax": 14000.0,
 				"taxLevel": [
 					{"level": "0-150,000", "tax": 0.0},
 					{"level": "150,001-500,000", "tax": 14000.0},
@@ -217,7 +218,7 @@ func TestTaxCalculation(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Scenario 7: Total income between 150001 and 500000 with wht and allowance more than limit ",
+			name: "Scenario 8: Total income between 150001 and 500000 with wht and allowance more than limit ",
 			input: `{
 				"totalIncome": 500000.0,
 				"wht": 20000.0,
@@ -258,7 +259,8 @@ func TestTaxCalculation(t *testing.T) {
 			if err := json.Unmarshal([]byte(tc.expected), &expectedResponse); err != nil {
 				t.Fatalf("failed to unmarshal expected response: %v", err)
 			}
-
+			allowance, _, _ := allowance_calculation.AllowanceCalculation(requestBody)
+			requestBody.TotalIncome -= allowance
 			actualResponse := TaxCalculation(requestBody.TotalIncome, requestBody.Wht)
 
 			assert.Equal(t, expectedResponse, actualResponse, "Response does not match expected")
