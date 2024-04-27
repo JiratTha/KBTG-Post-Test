@@ -29,15 +29,6 @@ func main() {
 		PORT = "8080" // Default port if not specified
 	}
 
-	AdminUsername := os.Getenv("AdminUsername")
-	if AdminUsername == "" {
-		AdminUsername = "adminTax" // Default port if not specified
-	}
-
-	AdminPassword := os.Getenv("AdminPassword")
-	if AdminPassword == "" {
-		AdminPassword = "admin!" // Default port if not specified
-	}
 	e.Validator = &util.CustomValidator{Validator: validator.New()}
 
 	router.InitRoutes(e)

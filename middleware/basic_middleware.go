@@ -22,9 +22,16 @@ func BasicAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		encodedCredentials := authParts[1]
 
-		username := os.Getenv("ADMIN_USERNAME")
-		password := os.Getenv("ADMIN_PASSWORD")
-		correctCredentials := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
+		AdminUsername := os.Getenv("ADMIN_USERNAME")
+		if AdminUsername == "" {
+			AdminUsername = "adminTax" // Default port if not specified
+		}
+
+		AdminPassword := os.Getenv("ADMIN_PASSWORD")
+		if AdminPassword == "" {
+			AdminPassword = "admin!" // Default port if not specified
+		}
+		correctCredentials := base64.StdEncoding.EncodeToString([]byte(AdminUsername + ":" + AdminPassword))
 
 		if encodedCredentials != correctCredentials {
 			return echo.NewHTTPError(401, "Invalid credentials")
