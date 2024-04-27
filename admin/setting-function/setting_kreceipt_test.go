@@ -1,79 +1,56 @@
 package setting
 
-//
-//import (
-//	"github.com/labstack/echo/v4"
-//	"net/http"
-//	"testing"
-//
-//	"github.com/stretchr/testify/assert"
-//	"github.com/stretchr/testify/mock"
-//
-//	"github.com/JiratTha/assessment-tax/admin/personal-struct-model"
-//	"github.com/JiratTha/assessment-tax/admin/setting-function"
-//)
-//
-//// MockDB is a mock implementation of the database interface for testing.
-//type MockDB struct {
-//	mock.Mock
-//}
-//
-//func (m *MockDB) Exec(query string, args ...interface{}) (interface{}, error) {
-//	argsList := m.Called(query, args)
-//	return argsList.Get(0), argsList.Error(1)
-//}
-//
-//func TestSettingKReceipt(t *testing.T) {
-//	// Initialize mock DB and set it in the setting package.
-//	mockDB := new(MockDB)
-//	setting.SetDB(mockDB)
-//
-//	// Define test cases.
-//	tests := []struct {
-//		name           string
-//		input          personal-struct-model.Admin
-//		expectedOutput personal-struct-model.AdminResponse
-//		mockExecResult interface{}
-//		mockExecError  error
-//	}{
-//		{
-//			name:           "Amount greater than limit",
-//			input:          personal-struct-model.Admin{Amount: 100001.0},
-//			expectedOutput: personal-struct-model.AdminResponse{PersonalDeduction: 100000.0},
-//			mockExecResult: nil,
-//			mockExecError:  nil,
-//		},
-//		{
-//			name:           "Amount within limit",
-//			input:          personal-struct-model.Admin{Amount: 80000.0},
-//			expectedOutput: personal-struct-model.AdminResponse{PersonalDeduction: 80000.0},
-//			mockExecResult: nil,
-//			mockExecError:  nil,
-//		},
-//		{
-//			name:           "Amount less than or equal 0",
-//			input:          personal-struct-model.Admin{Amount: 0.0},
-//			expectedOutput: echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be greater than 0",
-//			mockExecResult: nil,
-//			mockExecError:  nil,
-//		},
-//		// Add more test cases as needed.
-//	}
-//
-//	// Iterate through test cases.
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			// Mock DB.Exec method.
-//			mockDB.On("Exec", mock.Anything, mock.Anything).Return(tt.mockExecResult, tt.mockExecError)
-//
-//			// Call the function under test.
-//			output := setting.SettingPersonalDeduction(tt.input)
-//
-//			// Verify the result.
-//			assert.Equal(t, tt.expectedOutput, output)
-//
-//			// Assert that the expected DB.Exec method was called.
-//			mockDB.AssertCalled(t, "Exec", mock.Anything, mock.Anything)
-//		})
-//	}
-//}
+import (
+	"log"
+	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/JiratTha/assessment-tax/admin/model"
+	"github.com/JiratTha/assessment-tax/db"
+)
+
+func TestSettingKReceipt(t *testing.T) {
+	// Create a new mock database connection
+	dbMock, mock, err := sqlmock.New()
+	if err != nil {
+		log.Fatalf("An error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer dbMock.Close()
+
+	// Wrap the *sql.DB from sqlmock into an *sqlx.DB
+	sqlxDB := sqlx.NewDb(dbMock, "sqlmock")
+
+	// Inject the mock database into your singleton
+	db.SetDB(sqlxDB)
+
+	// Define expectations for SQL calls
+	mock.ExpectExec(`UPDATE project1."allowance" SET amount=\$1 WHERE allowance_type='k-receipt'`).
+		WithArgs(sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(1, 1)) // Mock successful update
+
+	// Test when Amount is greater than 100000
+	t.Run("AmountGreaterThan100000", func(t *testing.T) {
+		admin := model.Admin{Amount: 150000}
+		expected := model.AdminResponse{KReceipt: 100000}
+
+		result := SettingKReceipt(admin)
+		assert.Equal(t, expected, result, "Expected and actual results should match")
+	})
+
+	// Test when Amount is less than 100000
+	t.Run("AmountLessThan100000", func(t *testing.T) {
+		admin := model.Admin{Amount: 80000}
+		expected := model.AdminResponse{KReceipt: 80000}
+
+		result := SettingKReceipt(admin)
+		assert.Equal(t, expected, result, "Expected and actual results should match")
+	})
+
+	// Check if all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
