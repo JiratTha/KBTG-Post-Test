@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>admin-controller: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/JiratTha/assessment-tax/admin/admin-controller/admin_controller.go (0.0%)</option>
+				
+				<option value="file1">github.com/JiratTha/assessment-tax/admin/setting-function/setting_kreceipt.go (100.0%)</option>
+				
+				<option value="file2">github.com/JiratTha/assessment-tax/admin/setting-function/setting_personal_deduction.go (100.0%)</option>
+				
+				<option value="file3">github.com/JiratTha/assessment-tax/db/db.go (83.3%)</option>
+				
+				<option value="file4">github.com/JiratTha/assessment-tax/docs/docs.go (0.0%)</option>
+				
+				<option value="file5">github.com/JiratTha/assessment-tax/main.go (0.0%)</option>
+				
+				<option value="file6">github.com/JiratTha/assessment-tax/middleware/basic_middleware.go (0.0%)</option>
+				
+				<option value="file7">github.com/JiratTha/assessment-tax/router/router.go (0.0%)</option>
+				
+				<option value="file8">github.com/JiratTha/assessment-tax/tax/allowance-calculation/allowance_calculation.go (100.0%)</option>
+				
+				<option value="file9">github.com/JiratTha/assessment-tax/tax/tax-calculation/tax_calculation.go (100.0%)</option>
+				
+				<option value="file10">github.com/JiratTha/assessment-tax/tax/tax-controller/tax_controller.go (0.0%)</option>
+				
+				<option value="file11">github.com/JiratTha/assessment-tax/tax/tax-controller/tax_controller_csv.go (0.0%)</option>
+				
+				<option value="file12">github.com/JiratTha/assessment-tax/util/validate_struct.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package admin_controller
+
+import (
+        struc "github.com/JiratTha/assessment-tax/admin/model"
+        "github.com/JiratTha/assessment-tax/admin/setting-function"
+        "github.com/labstack/echo/v4"
+        "log"
+        "net/http"
+)
+
+// SetPersonalDeductPost using func SettingPersonalDeduction
+// @Summary Set personal deduction
+// @Description Set personal deduction. personal deduction must be greater than 10000 and cannot greater than 100000
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Param   admin_body  body      model.Admin  true  "personal deduct Request"
+// @Success 200 {object} model.AdminResponse  "Returns new personal deduct amount"
+// @Failure 400 {string} string "Invalid input"
+// @Router  /admin/deductions/personal [post]
+func SetPersonalDeductPost(c echo.Context) error <span class="cov0" title="0">{
+        var reqPersonalAmount struc.Admin
+        if err := c.Bind(&amp;reqPersonalAmount); err != nil </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+        }</span>
+        <span class="cov0" title="0">err := c.Validate(reqPersonalAmount)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err.Error())
+                return c.JSON(http.StatusInternalServerError, err.Error())
+        }</span>
+        <span class="cov0" title="0">if reqPersonalAmount.Amount &lt;= 10000 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "personal Deduction must be greater than 10000")
+        }</span>
+        <span class="cov0" title="0">newPersonalDeduct := setting.SettingPersonalDeduction(reqPersonalAmount)
+        return c.JSON(http.StatusOK, newPersonalDeduct)</span>
+}
+
+// SetKReceiptPost using func SettingKReceipt
+// @Summary Set K-receipt
+// @Description Set K-receipt. K-receipt must be greater than 0 and cannot greater than 100000
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Param   admin_body  body      model.Admin  true  "k-receipt Request"
+// @Success 200 {object} model.AdminResponse  "Returns new k-receipt deduct amount"
+// @Failure 400 {string} string "Invalid input"
+// @Router /admin/deductions/k-receipt [post]
+func SetKReceiptPost(c echo.Context) error <span class="cov0" title="0">{
+        var reqKReceiptAmount struc.Admin
+        if err := c.Bind(&amp;reqKReceiptAmount); err != nil </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+        }</span>
+        <span class="cov0" title="0">err := c.Validate(reqKReceiptAmount)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err.Error())
+                return c.JSON(http.StatusInternalServerError, err.Error())
+        }</span>
+        <span class="cov0" title="0">if reqKReceiptAmount.Amount &lt;= 0 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be greater than 0")
+        }</span>
+        <span class="cov0" title="0">newKReceipt := setting.SettingKReceipt(reqKReceiptAmount)
+        return c.JSON(http.StatusOK, newKReceipt)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package setting
+
+import (
+        "github.com/JiratTha/assessment-tax/admin/model"
+        "github.com/JiratTha/assessment-tax/db"
+        "log"
+)
+
+// SettingKReceipt using SetKReceiptPost
+func SettingKReceipt(kReceipt model.Admin) (newKReceipt model.AdminResponse) <span class="cov8" title="1">{
+        var kReceiptReq model.Admin
+        if kReceipt.Amount &gt; 100000 </span><span class="cov8" title="1">{
+                kReceiptReq.Amount = 100000
+        }</span> else<span class="cov8" title="1"> {
+                kReceiptReq.Amount = kReceipt.Amount
+        }</span>
+        <span class="cov8" title="1">_, err := db.DB.Exec(`UPDATE project1."allowance" SET amount=$1 WHERE allowance_type='k-receipt'`, kReceiptReq.Amount)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println(err)
+        }</span>
+        <span class="cov8" title="1">newKReceipt.KReceipt = kReceiptReq.Amount
+        return newKReceipt</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package setting
+
+import (
+        "github.com/JiratTha/assessment-tax/admin/model"
+
+        "github.com/JiratTha/assessment-tax/db"
+        "log"
+)
+
+// SettingPersonalDeduction using SetPersonnelDeductPost
+func SettingPersonalDeduction(personnelDeduction model.Admin) (newPersonnelDeduction model.AdminResponse) <span class="cov8" title="1">{
+        var personnelDeduct model.Admin
+        if personnelDeduction.Amount &gt; 100000.0 </span><span class="cov8" title="1">{
+                personnelDeduct.Amount = 100000.0
+        }</span> else<span class="cov8" title="1"> {
+                personnelDeduct.Amount = personnelDeduction.Amount
+        }</span>
+        <span class="cov8" title="1">_, err := db.DB.Exec(`UPDATE project1."personnel_deduction" SET amount=$1 WHERE personnel_deduction='personnelDeduction'`, personnelDeduct.Amount)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println(err)
+        }</span>
+        <span class="cov8" title="1">newPersonnelDeduction.PersonalDeduction = personnelDeduct.Amount
+        return newPersonnelDeduction</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package db
+
+import (
+        "github.com/jmoiron/sqlx"
+        _ "github.com/lib/pq"
+        "log"
+)
+
+var DB *sqlx.DB
+
+func InitDB(dataSourceName string) error <span class="cov8" title="1">{
+        var err error
+        DB, err = sqlx.Connect("postgres", dataSourceName)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Panic(err)
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func SetDB(database *sqlx.DB) <span class="cov8" title="1">{
+        DB = database
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Package docs Code generated by swaggo/swag. DO NOT EDIT
+package docs
+
+import "github.com/swaggo/swag"
+
+const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
+    "swagger": "2.0",
+    "info": {
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
+        "contact": {},
+        "version": "{{.Version}}"
+    },
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
+    "paths": {
+        "/admin/deductions/k-receipt": {
+            "post": {
+                "description": "Set K-receipt. K-receipt must be greater than 0 and cannot greater than 100000",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax"
+                ],
+                "summary": "Set K-receipt",
+                "parameters": [
+                    {
+                        "description": "k-receipt Request",
+                        "name": "admin_body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns new k-receipt deduct amount",
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/deductions/personal": {
+            "post": {
+                "description": "Set personal deduction. personal deduction must be greater than 10000 and cannot greater than 100000",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax"
+                ],
+                "summary": "Set personal deduction",
+                "parameters": [
+                    {
+                        "description": "personal deduct Request",
+                        "name": "admin_body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns new personal deduct amount",
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/tax/calculations": {
+            "post": {
+                "description": "Calculates taxes based on total income, withholding tax, and allowances.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax"
+                ],
+                "summary": "Calculate taxes",
+                "responses": {
+                    "200": {
+                        "description": "Returns the calculated tax amount",
+                        "schema": {
+                            "$ref": "#/definitions/model.TaxResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/tax/calculations/upload-csv": {
+            "post": {
+                "description": "Calculates taxes based on total income, withholding tax, and allowances from csv file.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax"
+                ],
+                "summary": "Calculate taxes from upload csv file",
+                "responses": {
+                    "200": {
+                        "description": "Returns the calculated tax amount and refund if it has from csv file",
+                        "schema": {
+                            "$ref": "#/definitions/model.TaxResponseCSVStruct"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Admin": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "model.AdminResponse": {
+            "type": "object",
+            "properties": {
+                "kReceipt": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "personalDeduction": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "model.TaxLevel": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string"
+                },
+                "tax": {
+                    "type": "number"
+                },
+                "taxRefund": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.TaxResponse": {
+            "type": "object",
+            "properties": {
+                "tax": {
+                    "type": "number"
+                },
+                "taxLevel": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TaxLevel"
+                    }
+                },
+                "taxRefund": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.TaxResponseCSVDataStruct": {
+            "type": "object",
+            "properties": {
+                "tax": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "taxRefund": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "totalIncome": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "model.TaxResponseCSVStruct": {
+            "type": "object",
+            "properties": {
+                "taxes": {
+                    "type": "array",
+                    "minItems": 0,
+                    "items": {
+                        "$ref": "#/definitions/model.TaxResponseCSVDataStruct"
+                    }
+                }
+            }
+        }
+    }
+}`
+
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+var SwaggerInfo = &amp;swag.Spec{
+        Version:          "",
+        Host:             "",
+        BasePath:         "",
+        Schemes:          []string{},
+        Title:            "",
+        Description:      "",
+        InfoInstanceName: "swagger",
+        SwaggerTemplate:  docTemplate,
+        LeftDelim:        "{{",
+        RightDelim:       "}}",
+}
+
+func init() <span class="cov0" title="0">{
+        swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package main
+
+import (
+        "github.com/JiratTha/assessment-tax/db"
+        _ "github.com/JiratTha/assessment-tax/docs"
+        "github.com/JiratTha/assessment-tax/router"
+        "github.com/JiratTha/assessment-tax/util"
+        "github.com/go-playground/validator/v10"
+        "github.com/labstack/echo/v4"
+        echoswagger "github.com/swaggo/echo-swagger"
+        "net/http"
+        "os"
+)
+
+func main() <span class="cov0" title="0">{
+        e := echo.New()
+
+        DatabaseUrl := os.Getenv("DatabaseUrl")
+        if DatabaseUrl == "" </span><span class="cov0" title="0">{
+                DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
+                err := db.InitDB(DatabaseUrl)
+                if err != nil </span><span class="cov0" title="0">{
+                        e.Logger.Fatal("Error fetching allowance:", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">PORT := os.Getenv("PORT")
+        if PORT == "" </span><span class="cov0" title="0">{
+                PORT = "8080" // Default port if not specified
+        }</span>
+
+        <span class="cov0" title="0">e.Validator = &amp;util.CustomValidator{Validator: validator.New()}
+
+        router.InitRoutes(e)
+        e.GET("/swagger/*", echoswagger.WrapHandler)
+
+        e.GET("/health", func(c echo.Context) error </span><span class="cov0" title="0">{
+                return c.String(http.StatusOK, "healthy")
+        }</span>)
+
+        <span class="cov0" title="0">e.Logger.Fatal(e.Start(":" + PORT))</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package middleware
+
+import (
+        "encoding/base64"
+        "os"
+        "strings"
+
+        "github.com/labstack/echo/v4"
+)
+
+func BasicAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc <span class="cov0" title="0">{
+        return func(c echo.Context) error </span><span class="cov0" title="0">{
+                authorizationHeader := c.Request().Header.Get("Authorization")
+                if authorizationHeader == "" </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(401, "Authentication required")
+                }</span>
+
+                <span class="cov0" title="0">authParts := strings.SplitN(authorizationHeader, " ", 2)
+                if len(authParts) != 2 || authParts[0] != "Basic" </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(401, "Invalid authentication format")
+                }</span>
+
+                <span class="cov0" title="0">encodedCredentials := authParts[1]
+
+                AdminUsername := os.Getenv("ADMIN_USERNAME")
+                if AdminUsername == "" </span><span class="cov0" title="0">{
+                        AdminUsername = "adminTax" // Default port if not specified
+                }</span>
+
+                <span class="cov0" title="0">AdminPassword := os.Getenv("ADMIN_PASSWORD")
+                if AdminPassword == "" </span><span class="cov0" title="0">{
+                        AdminPassword = "admin!" // Default port if not specified
+                }</span>
+                <span class="cov0" title="0">correctCredentials := base64.StdEncoding.EncodeToString([]byte(AdminUsername + ":" + AdminPassword))
+
+                if encodedCredentials != correctCredentials </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(401, "Invalid credentials")
+                }</span>
+
+                <span class="cov0" title="0">return next(c)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package router
+
+import (
+        admin_controller "github.com/JiratTha/assessment-tax/admin/admin-controller"
+        "github.com/JiratTha/assessment-tax/middleware"
+        tax_controller "github.com/JiratTha/assessment-tax/tax/tax-controller"
+        "github.com/labstack/echo/v4"
+)
+
+func InitRoutes(e *echo.Echo) <span class="cov0" title="0">{
+        e.POST("/tax/calculations", tax_controller.TaxCalculationsPost)
+        e.POST("/tax/calculations/upload-csv", tax_controller.TaxCalculationCSVPost)
+        //Admin controller
+        g := e.Group("/admin")
+        g.Use(middleware.BasicAuthMiddleware)
+        g.POST("/deductions/personal", admin_controller.SetPersonalDeductPost)
+        g.POST("/deductions/k-receipt", admin_controller.SetKReceiptPost)
+
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package allowance_calculation
+
+import (
+        "github.com/JiratTha/assessment-tax/db"
+        "github.com/JiratTha/assessment-tax/tax/personal"
+)
+
+// AllowanceCalculation calculate total allowance , seperate Allowance type and Limit max allowance amount by database
+func AllowanceCalculation(allowance personal.Personnel) (totalAllowance float64, totalDonation float64, totalKreciept float64) <span class="cov8" title="1">{
+        var allowanceAmountDonation personal.Allowance
+        var allowanceAmountKReceipt personal.Allowance
+        var totalAllowanceAmount = 0.0
+        var donationAmount = 0.0
+        var kReceiptAmount = 0.0
+
+        _ = db.DB.Get(&amp;allowanceAmountDonation, `SELECT  amount FROM project1."allowance" WHERE allowance_type=$1`, "donation")
+        _ = db.DB.Get(&amp;allowanceAmountKReceipt, `SELECT  amount FROM project1."allowance" WHERE allowance_type=$1`, "k-receipt")
+
+        for _, i := range allowance.Allowance </span><span class="cov8" title="1">{
+                totalAllowanceAmount += i.Amount
+                if i.AllowanceType == "donation" </span><span class="cov8" title="1">{
+                        donationAmount += i.Amount
+                        if donationAmount &gt; allowanceAmountDonation.Amount </span><span class="cov8" title="1">{
+                                donationAmount = allowanceAmountDonation.Amount
+                        }</span>
+                }
+                <span class="cov8" title="1">if i.AllowanceType == "k-receipt" </span><span class="cov8" title="1">{
+                        kReceiptAmount += i.Amount
+                        if kReceiptAmount &gt; allowanceAmountKReceipt.Amount </span><span class="cov8" title="1">{
+                                kReceiptAmount = allowanceAmountKReceipt.Amount
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">totalAllowance = donationAmount + kReceiptAmount
+        return totalAllowance, donationAmount, kReceiptAmount</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package tax_calculation
+
+import (
+        "github.com/JiratTha/assessment-tax/db"
+        "github.com/JiratTha/assessment-tax/tax/model"
+)
+
+// TaxCalculation calculate tax , receive personal deduction from database
+func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) <span class="cov8" title="1">{
+        taxAmount := model.TaxLevel{}
+        var personnelDeduction float64
+        _ = db.DB.Get(&amp;personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
+        totalIncome -= personnelDeduction
+        response := model.TaxResponse{
+                Tax:    taxAmount.Tax,
+                Refund: taxAmount.Refund,
+                TaxLevel: []model.TaxLevel{
+                        {Level: "0-150,000", Tax: 0.0},
+                        {Level: "150,001-500,000", Tax: 0.0},
+                        {Level: "500,001-1,000,000", Tax: 0.0},
+                        {Level: "1,000,001-2,000,000", Tax: 0.0},
+                        {Level: "2,000,001 ขึ้นไป", Tax: 0.0},
+                },
+        }
+
+        if totalIncome &lt;= 150000.0 </span><span class="cov8" title="1">{
+                taxAmount.Level = "0-150000"
+                taxAmount.Tax = 0.0
+        }</span> else<span class="cov8" title="1"> if totalIncome &lt;= 500000.0 </span><span class="cov8" title="1">{
+                taxAmount.Level = "150,001-500,000"
+                taxAmount.Tax = (totalIncome - 150000) * 0.1
+                response.TaxLevel[1].Tax = taxAmount.Tax
+
+        }</span> else<span class="cov8" title="1"> if totalIncome &lt;= 1000000.0 </span><span class="cov8" title="1">{
+                taxAmount.Level = "500,001-1,000,000"
+                taxAmount.Tax = 35000 + ((totalIncome - 500000) * 0.15)
+                response.TaxLevel[1].Tax = 35000
+                response.TaxLevel[2].Tax = taxAmount.Tax - 35000
+        }</span> else<span class="cov8" title="1"> if totalIncome &lt;= 2000000.0 </span><span class="cov8" title="1">{
+                taxAmount.Level = "1,000,001-2,000,000"
+                taxAmount.Tax = 110000 + ((totalIncome - 1000000) * 0.2)
+                response.TaxLevel[1].Tax = 35000
+                response.TaxLevel[2].Tax = 75000.0
+                response.TaxLevel[3].Tax = taxAmount.Tax - 75000 - 35000
+        }</span> else<span class="cov8" title="1"> {
+                taxAmount.Level = "2,000,001 ขึ้นไป"
+                taxAmount.Tax = 310000 + ((totalIncome - 2000000) * 0.35)
+                response.TaxLevel[1].Tax = 35000
+                response.TaxLevel[2].Tax = 75000.0
+                response.TaxLevel[3].Tax = 200000.0
+                response.TaxLevel[4].Tax = taxAmount.Tax - 200000 - 75000 - 35000
+        }</span>
+
+        <span class="cov8" title="1">taxAmount.Tax -= wht
+        if taxAmount.Tax &lt; 0 </span><span class="cov8" title="1">{
+                taxAmount.Refund = -taxAmount.Tax
+                taxAmount.Tax = 0
+        }</span>
+        <span class="cov8" title="1">response.Tax = taxAmount.Tax
+        response.Refund = taxAmount.Refund
+        return response</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package tax_controller
+
+import (
+        "github.com/JiratTha/assessment-tax/tax/allowance-calculation"
+        struc "github.com/JiratTha/assessment-tax/tax/personal"
+        "github.com/JiratTha/assessment-tax/tax/tax-calculation"
+        "github.com/labstack/echo/v4"
+        "log"
+        "net/http"
+)
+
+// TaxCalculationsPost handles the POST /tax/calculations route
+// @Summary Calculate taxes
+// @Description Calculates taxes based on total income, withholding tax, and allowances.
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.TaxResponse  "Returns the calculated tax amount"
+// @Failure 400 {string} string "Invalid input"
+// @Router /tax/calculations [post]
+func TaxCalculationsPost(c echo.Context) error <span class="cov0" title="0">{
+        var personal struc.Personnel
+        if err := c.Bind(&amp;personal); err != nil </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+        }</span>
+        <span class="cov0" title="0">err := c.Validate(personal)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err.Error())
+                return c.JSON(http.StatusInternalServerError, err.Error())
+        }</span>
+        <span class="cov0" title="0">if personal.TotalIncome &lt; 0 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Total Income must be greater than zero")
+        }</span>
+        <span class="cov0" title="0">if personal.Wht &lt; 0 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Wht must be greater than zero")
+        }</span>
+        <span class="cov0" title="0">allowanceData := personal.Allowance
+        for i := range allowanceData </span><span class="cov0" title="0">{
+                if allowanceData[i].Amount &lt; 0 </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(http.StatusBadRequest, "Allowance Amount must be greater than zero")
+                }</span>
+        }
+        <span class="cov0" title="0">allowance, _, _ := allowance_calculation.AllowanceCalculation(personal)
+        personal.TotalIncome -= allowance
+        totalTax := tax_calculation.TaxCalculation(personal.TotalIncome, personal.Wht)
+        return c.JSON(http.StatusOK, totalTax)</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package tax_controller
+
+import (
+        "encoding/csv"
+        struc "github.com/JiratTha/assessment-tax/tax/model"
+        tax_calculation "github.com/JiratTha/assessment-tax/tax/tax-calculation"
+        "github.com/labstack/echo/v4"
+        "io"
+        "net/http"
+        "strconv"
+)
+
+// TaxCalculationCSVPost handles the POST /tax/calculations route
+// @Summary Calculate taxes from upload csv file
+// @Description Calculates taxes based on total income, withholding tax, and allowances from csv file.
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.TaxResponseCSVStruct "Returns the calculated tax amount and refund if it has from csv file"
+// @Failure 400 {string} string "Invalid input"
+// @Router /tax/calculations/upload-csv [post]
+func TaxCalculationCSVPost(c echo.Context) error <span class="cov0" title="0">{
+
+        file, err := c.FormFile("taxFile")
+        if err != nil </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "The file retrieval was unsuccessful")
+        }</span>
+
+        <span class="cov0" title="0">src, err := file.Open()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">defer src.Close()
+
+        reader := csv.NewReader(src)
+        var taxes []struc.TaxResponseCSVDataStruct
+
+        if _, err = reader.Read(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">var loopNumber = 0
+        for </span><span class="cov0" title="0">{
+                record, err := reader.Read()
+                if err == io.EOF </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(http.StatusInternalServerError, "The file reading was unsuccessful")
+                }</span>
+
+                <span class="cov0" title="0">totalIncome, err := strconv.ParseFloat(record[0], 64)
+                wht, err := strconv.ParseFloat(record[1], 64)
+                donation, err := strconv.ParseFloat(record[2], 64)
+                if err != nil </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(http.StatusBadRequest, "Invalid input value")
+                }</span>
+
+                <span class="cov0" title="0">if donation &gt; 100000 </span><span class="cov0" title="0">{
+                        donation = 100000
+                }</span>
+                <span class="cov0" title="0">totalIncomeDeductDonation := totalIncome - donation
+                tax := tax_calculation.TaxCalculation(totalIncomeDeductDonation, wht)
+
+                taxes = append(
+                        taxes,
+                        struc.TaxResponseCSVDataStruct{
+                                TotalIncomeCSV: totalIncome,
+                                TaxCSV:         tax.Tax,
+                                TaxRefund:      tax.Refund,
+                        },
+                )
+
+                loopNumber += 1</span>
+        }
+
+        <span class="cov0" title="0">return c.JSON(http.StatusOK, struc.TaxResponseCSVStruct{TaxesCSV: taxes})</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package util
+
+import "github.com/go-playground/validator/v10"
+
+type CustomValidator struct {
+        Validator *validator.Validate
+}
+
+// Validate implements echo's validator interface using the go-playground validator.
+func (cv *CustomValidator) Validate(i interface{}) error <span class="cov0" title="0">{
+        return cv.Validator.Struct(i)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
