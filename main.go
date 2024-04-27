@@ -1,15 +1,21 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"github.com/JiratTha/assessment-tax/db"
 	_ "github.com/JiratTha/assessment-tax/docs"
 	"github.com/JiratTha/assessment-tax/router"
 	"github.com/JiratTha/assessment-tax/util"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoswagger "github.com/swaggo/echo-swagger"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -28,16 +34,35 @@ func main() {
 	if PORT == "" {
 		PORT = "8080" // Default port if not specified
 	}
-
+	e.Use(middleware.CORS())
+	e.Use(middleware.Logger())
+	e.Use(middleware.Secure())
+	e.Use(middleware.Recover())
 	e.Validator = &util.CustomValidator{Validator: validator.New()}
-
-	router.InitRoutes(e)
 	e.GET("/swagger/*", echoswagger.WrapHandler)
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "healthy")
 	})
 
-	e.Logger.Fatal(e.Start(":" + PORT))
+	router.InitRoutes(e)
+
+	go func() {
+		if err := e.Start(":" + PORT); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server: ", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal("error shutting down the server: ", err)
+	}
+	e.Logger.Info("Server gracefully stopped")
+	fmt.Println("shutting down the server")
 
 }
