@@ -7,7 +7,17 @@ import (
 	"log"
 )
 
-// SettingPersonnelDeduction function for admin set new personal deduction and cannot set more than 100,000
+// SettingPersonnelDeduction using SetPersonnelDeductPost
+// @Summary SetPersonnelDeduct
+// @Description Admin set personnel deduct
+// @Tags admin
+// @Accept  json
+// @Produce  json
+// @Param   personnelDeduct_body  body  _model.Admin  true  "Set Personal Deduct"
+// @Success 200 {object} _model.AdminResponse  "Returns new personal Deduct"
+// @Failure 400 {string} string "err"
+// @Router /deductions/personal [post]
+// @Router /deductions/personal [post]
 func SettingPersonnelDeduction(personnelDeduction model.Admin) (newPersonnelDeduction model.AdminResponse) {
 	var personnelDeduct model.Admin
 	err := db.DB.Get(&personnelDeduct, `SELECT amount FROM project1."personnel_deduction" WHERE personnel_deduction='personnelDeduction'`)
@@ -29,7 +39,17 @@ func SettingPersonnelDeduction(personnelDeduction model.Admin) (newPersonnelDedu
 	return newPersonnelDeduction
 }
 
-// SettingKReceipt function for admin set new k-receipt amount and cannot set more than 100,000
+// SettingKReceipt using SetKReceiptPost
+// @Summary SetKReceipt
+// @Description Admin set k-receipt
+// @Tags admin
+// @Accept  json
+// @Produce  json
+// @Param   KReceipt_body  body  _model.Admin  true  "Set k-receipt"
+// @Success 200 {object} _model.AdminResponse  "Returns new k-receipt"
+// @Failure 400 {string} string "err"
+// @Router /deductions/k-receipt [post]
+// @Router /deductions/k-receipt [post]
 func SettingKReceipt(kReceipt model.Admin) (newKReceipt model.AdminResponse) {
 	var kReceiptReq model.Admin
 	if kReceipt.Amount > 100000 {

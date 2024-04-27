@@ -2,12 +2,23 @@ package tax_controller
 
 import (
 	struc "github.com/JiratTha/assessment-tax/Personnel/model"
+	"github.com/JiratTha/assessment-tax/tax/allowance-calculation"
 	"github.com/JiratTha/assessment-tax/tax/tax-calculation"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-// TaxCalculationsPost using TaxCalculation and AllowanceCalculation
+// TaxCalculationsPost handles the POST /tax/calculations route
+// @Summary Calculate taxes
+// @Description Calculates taxes based on total income, withholding tax, and allowances.
+// @Tags tax
+// @Accept  json
+// @Produce  json
+// @Param   tax_body  body      totalIncome,wht  true  "Tax Calculation Request"
+// @Success 200 {object} _model.TaxResponse  "Returns the calculated tax amount"
+// @Failure 400 {string} string "Invalid input"
+// @Router /tax/calculations [post]
+// @Router /tax/calculations [post]
 func TaxCalculationsPost(c echo.Context) error {
 	var personal struc.Personnel
 	if err := c.Bind(&personal); err != nil {
@@ -25,7 +36,7 @@ func TaxCalculationsPost(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Allowance Amount must be greater than zero")
 		}
 	}
-	allowance, _, _ := tax_calculation.AllowanceCalculation(personal)
+	allowance, _, _ := allowance_calculation.AllowanceCalculation(personal)
 	personal.TotalIncome -= allowance
 	totalTax := tax_calculation.TaxCalculation(personal.TotalIncome, personal.Wht)
 	return c.JSON(http.StatusOK, totalTax)

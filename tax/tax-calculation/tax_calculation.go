@@ -1,41 +1,9 @@
 package tax_calculation
 
 import (
-	Personnel_model "github.com/JiratTha/assessment-tax/Personnel/model"
 	"github.com/JiratTha/assessment-tax/db"
 	"github.com/JiratTha/assessment-tax/tax/model"
 )
-
-// AllowanceCalculation calculate total allowance , seperate Allowance type and Limit max allowance amount by database
-func AllowanceCalculation(allowance Personnel_model.Personnel) (totalAllowance float64, totalDonation float64, totalKreciept float64) {
-	var allowanceAmountDomation Personnel_model.Allowance
-	var allowanceAmountKreceipt Personnel_model.Allowance
-	var totalAllowanceAmount = 0.0
-	var donationAmount = 0.0
-	var krecieptAmount = 0.0
-
-	_ = db.DB.Get(&allowanceAmountDomation, `SELECT  amount FROM project1."allowance" WHERE allowance_type=$1`, "donation")
-	_ = db.DB.Get(&allowanceAmountKreceipt, `SELECT  amount FROM project1."allowance" WHERE allowance_type=$1`, "k-receipt")
-
-	for _, i := range allowance.Allowance {
-		totalAllowanceAmount += i.Amount
-		if i.AllowanceType == "donation" {
-			donationAmount += i.Amount
-			if donationAmount > allowanceAmountDomation.Amount {
-				donationAmount = allowanceAmountDomation.Amount
-			}
-		}
-		if i.AllowanceType == "k-receipt" {
-			krecieptAmount += i.Amount
-			if krecieptAmount > allowanceAmountKreceipt.Amount {
-				krecieptAmount = allowanceAmountKreceipt.Amount
-			}
-		}
-	}
-
-	totalAllowance = donationAmount + krecieptAmount
-	return totalAllowance, donationAmount, krecieptAmount
-}
 
 // TaxCalculation calculate tax , receive Personnel deduction from database
 func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) {
