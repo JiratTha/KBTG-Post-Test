@@ -12,7 +12,7 @@ func InitDB(dataSourceName string) error {
 	var err error
 	DB, err = sqlx.Connect("postgres", dataSourceName)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Unable to connect to database: %v", err)
 	}
 	return nil
 }

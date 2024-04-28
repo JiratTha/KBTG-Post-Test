@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/JiratTha/assessment-tax/admin/setting-function/setting_personal_deduction.go (100.0%)</option>
 				
-				<option value="file3">github.com/JiratTha/assessment-tax/db/db.go (83.3%)</option>
+				<option value="file3">github.com/JiratTha/assessment-tax/db/db.go (45.5%)</option>
 				
 				<option value="file4">github.com/JiratTha/assessment-tax/docs/docs.go (0.0%)</option>
 				
@@ -121,10 +121,12 @@ func SetPersonalDeductPost(c echo.Context) error <span class="cov0" title="0">{
         <span class="cov0" title="0">err := c.Validate(reqPersonalAmount)
         if err != nil </span><span class="cov0" title="0">{
                 log.Println(err.Error())
-                return c.JSON(http.StatusInternalServerError, err.Error())
+                return c.JSON(http.StatusBadRequest, err.Error())
         }</span>
         <span class="cov0" title="0">if reqPersonalAmount.Amount &lt;= 10000 </span><span class="cov0" title="0">{
-                return echo.NewHTTPError(http.StatusBadRequest, "personal Deduction must be greater than 10000")
+                return echo.NewHTTPError(http.StatusBadRequest, "Personal deduction must be greater than 10000")
+        }</span> else<span class="cov0" title="0"> if reqPersonalAmount.Amount &gt; 100000 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "Personal deduction must be less than or equal 100000")
         }</span>
         <span class="cov0" title="0">newPersonalDeduct := setting.SettingPersonalDeduction(reqPersonalAmount)
         return c.JSON(http.StatusOK, newPersonalDeduct)</span>
@@ -148,10 +150,12 @@ func SetKReceiptPost(c echo.Context) error <span class="cov0" title="0">{
         <span class="cov0" title="0">err := c.Validate(reqKReceiptAmount)
         if err != nil </span><span class="cov0" title="0">{
                 log.Println(err.Error())
-                return c.JSON(http.StatusInternalServerError, err.Error())
+                return c.JSON(http.StatusBadRequest, err.Error())
         }</span>
         <span class="cov0" title="0">if reqKReceiptAmount.Amount &lt;= 0 </span><span class="cov0" title="0">{
                 return echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be greater than 0")
+        }</span> else<span class="cov0" title="0"> if reqKReceiptAmount.Amount &gt; 100000 </span><span class="cov0" title="0">{
+                return echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be less than or equal 100000")
         }</span>
         <span class="cov0" title="0">newKReceipt := setting.SettingKReceipt(reqKReceiptAmount)
         return c.JSON(http.StatusOK, newKReceipt)</span>
@@ -193,19 +197,19 @@ import (
 )
 
 // SettingPersonalDeduction using SetPersonnelDeductPost
-func SettingPersonalDeduction(personnelDeduction model.Admin) (newPersonnelDeduction model.AdminResponse) <span class="cov8" title="1">{
-        var personnelDeduct model.Admin
-        if personnelDeduction.Amount &gt; 100000.0 </span><span class="cov8" title="1">{
-                personnelDeduct.Amount = 100000.0
+func SettingPersonalDeduction(personalDeduction model.Admin) (newPersonalDeduction model.AdminResponse) <span class="cov8" title="1">{
+        var personalDeduct model.Admin
+        if personalDeduction.Amount &gt; 100000.0 </span><span class="cov8" title="1">{
+                personalDeduct.Amount = 100000.0
         }</span> else<span class="cov8" title="1"> {
-                personnelDeduct.Amount = personnelDeduction.Amount
+                personalDeduct.Amount = personalDeduction.Amount
         }</span>
-        <span class="cov8" title="1">_, err := db.DB.Exec(`UPDATE project1."personnel_deduction" SET amount=$1 WHERE personnel_deduction='personnelDeduction'`, personnelDeduct.Amount)
+        <span class="cov8" title="1">_, err := db.DB.Exec(`UPDATE project1."personal_deduction" SET amount=$1 WHERE personal_deduction='personalDeduction'`, personalDeduct.Amount)
         if err != nil </span><span class="cov8" title="1">{
                 log.Println(err)
         }</span>
-        <span class="cov8" title="1">newPersonnelDeduction.PersonalDeduction = personnelDeduct.Amount
-        return newPersonnelDeduction</span>
+        <span class="cov8" title="1">newPersonalDeduction.PersonalDeduction = personalDeduct.Amount
+        return newPersonalDeduction</span>
 }
 </pre>
 		
@@ -223,7 +227,7 @@ func InitDB(dataSourceName string) error <span class="cov8" title="1">{
         var err error
         DB, err = sqlx.Connect("postgres", dataSourceName)
         if err != nil </span><span class="cov0" title="0">{
-                log.Panic(err)
+                log.Fatalf("Unable to connect to database: %v", err)
         }</span>
         <span class="cov8" title="1">return nil</span>
 }
@@ -231,6 +235,16 @@ func InitDB(dataSourceName string) error <span class="cov8" title="1">{
 func SetDB(database *sqlx.DB) <span class="cov8" title="1">{
         DB = database
 }</span>
+func CloseDB() <span class="cov0" title="0">{
+        if DB != nil </span><span class="cov0" title="0">{
+                err := DB.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("Failed to close database connection:", err)
+                }</span> else<span class="cov0" title="0"> {
+                        log.Println("Database connection closed successfully.")
+                }</span>
+        }
+}
 </pre>
 		
 		<pre class="file" id="file4" style="display: none">// Package docs Code generated by swaggo/swag. DO NOT EDIT
@@ -497,21 +511,27 @@ func init() <span class="cov0" title="0">{
 		<pre class="file" id="file5" style="display: none">package main
 
 import (
+        "context"
+        "fmt"
         "github.com/JiratTha/assessment-tax/db"
         _ "github.com/JiratTha/assessment-tax/docs"
         "github.com/JiratTha/assessment-tax/router"
         "github.com/JiratTha/assessment-tax/util"
         "github.com/go-playground/validator/v10"
         "github.com/labstack/echo/v4"
+        "github.com/labstack/echo/v4/middleware"
         echoswagger "github.com/swaggo/echo-swagger"
         "net/http"
         "os"
+        "os/signal"
+        "syscall"
+        "time"
 )
 
 func main() <span class="cov0" title="0">{
         e := echo.New()
 
-        DatabaseUrl := os.Getenv("DatabaseUrl")
+        DatabaseUrl := os.Getenv("DATABASE_URL")
         if DatabaseUrl == "" </span><span class="cov0" title="0">{
                 DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
                 err := db.InitDB(DatabaseUrl)
@@ -524,19 +544,44 @@ func main() <span class="cov0" title="0">{
         if PORT == "" </span><span class="cov0" title="0">{
                 PORT = "8080" // Default port if not specified
         }</span>
-
-        <span class="cov0" title="0">e.Validator = &amp;util.CustomValidator{Validator: validator.New()}
-
-        router.InitRoutes(e)
+        <span class="cov0" title="0">e.Use(middleware.CORS())
+        e.Use(middleware.Logger())
+        e.Use(middleware.Secure())
+        e.Use(middleware.Recover())
+        e.Validator = &amp;util.CustomValidator{Validator: validator.New()}
         e.GET("/swagger/*", echoswagger.WrapHandler)
 
         e.GET("/health", func(c echo.Context) error </span><span class="cov0" title="0">{
                 return c.String(http.StatusOK, "healthy")
         }</span>)
 
-        <span class="cov0" title="0">e.Logger.Fatal(e.Start(":" + PORT))</span>
+        <span class="cov0" title="0">router.InitRoutes(e)
+
+        go func() </span><span class="cov0" title="0">{
+                if err := e.Start(":" + PORT); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov0" title="0">{
+                        e.Logger.Fatal("shutting down the server: ", err)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">quit := make(chan os.Signal, 1)
+        signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+        &lt;-quit
+        preShutdownTasks()
+        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        defer cancel()
+        if err := e.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
+                e.Logger.Fatal("error shutting down the server: ", err)
+        }</span>
+        <span class="cov0" title="0">e.Logger.Info("Server gracefully stopped")
+        fmt.Println("shutting down the server")</span>
 
 }
+func preShutdownTasks() <span class="cov0" title="0">{
+        fmt.Println("Running pre-shutdown tasks...")
+        db.CloseDB()
+        time.Sleep(5 * time.Second)
+        fmt.Println("Pre-shutdown tasks complete.")
+}</span>
 </pre>
 		
 		<pre class="file" id="file6" style="display: none">package middleware
@@ -653,9 +698,9 @@ import (
 // TaxCalculation calculate tax , receive personal deduction from database
 func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) <span class="cov8" title="1">{
         taxAmount := model.TaxLevel{}
-        var personnelDeduction float64
-        _ = db.DB.Get(&amp;personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
-        totalIncome -= personnelDeduction
+        var personalDeduction float64
+        _ = db.DB.Get(&amp;personalDeduction, `SELECT  amount FROM project1."personal_deduction" `)
+        totalIncome -= personalDeduction
         response := model.TaxResponse{
                 Tax:    taxAmount.Tax,
                 Refund: taxAmount.Refund,
