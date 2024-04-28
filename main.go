@@ -56,7 +56,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-
+	preShutdownTasks()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
@@ -65,4 +65,10 @@ func main() {
 	e.Logger.Info("Server gracefully stopped")
 	fmt.Println("shutting down the server")
 
+}
+func preShutdownTasks() {
+	fmt.Println("Running pre-shutdown tasks...")
+	db.CloseDB()
+	time.Sleep(5 * time.Second)
+	fmt.Println("Pre-shutdown tasks complete.")
 }
