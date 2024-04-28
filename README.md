@@ -44,6 +44,11 @@
   ```
   go run main.go
   ```
+#### FAQ
+
+1. If error during DOcker build pleas make sure that initDb.go is comment except package main line
+
+---
 
 #### Ready to Use
 
