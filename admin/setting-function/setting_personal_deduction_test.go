@@ -27,25 +27,25 @@ func TestSettingPersonalDeduction(t *testing.T) {
 	db.SetDB(sqlxDB)
 
 	// Define expectations for SQL calls
-	mock.ExpectExec(`UPDATE project1."personnel_deduction" SET amount=\$1 WHERE personnel_deduction='personnelDeduction'`).
+	mock.ExpectExec(`UPDATE project1."personal_deduction" SET amount=\$1 WHERE personal_deduction='personalDeduction'`).
 		WithArgs(100000.0).                       // Ensuring the argument is a floating point as used in your function
 		WillReturnResult(sqlmock.NewResult(1, 1)) // Mock successful update
 
 	// Test when Amount is greater than 100000
 	t.Run("AmountGreaterThan100000", func(t *testing.T) {
-		personnelDeduction := model.Admin{Amount: 150000.0}
+		personalDeduction := model.Admin{Amount: 150000.0}
 		expected := model.AdminResponse{PersonalDeduction: 100000.0}
 
-		result := SettingPersonalDeduction(personnelDeduction)
+		result := SettingPersonalDeduction(personalDeduction)
 		assert.Equal(t, expected, result, "Expected and actual results should match")
 	})
 
 	// Test when Amount is less than 100000
 	t.Run("AmountLessThan100000", func(t *testing.T) {
-		personnelDeduction := model.Admin{Amount: 80000.0}
+		personalDeduction := model.Admin{Amount: 80000.0}
 		expected := model.AdminResponse{PersonalDeduction: 80000.0}
 
-		result := SettingPersonalDeduction(personnelDeduction)
+		result := SettingPersonalDeduction(personalDeduction)
 		assert.Equal(t, expected, result, "Expected and actual results should match")
 	})
 

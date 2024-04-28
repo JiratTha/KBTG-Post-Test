@@ -26,10 +26,12 @@ func SetPersonalDeductPost(c echo.Context) error {
 	err := c.Validate(reqPersonalAmount)
 	if err != nil {
 		log.Println(err.Error())
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	if reqPersonalAmount.Amount <= 10000 {
-		return echo.NewHTTPError(http.StatusBadRequest, "personal Deduction must be greater than 10000")
+		return echo.NewHTTPError(http.StatusBadRequest, "Personal deduction must be greater than 10000")
+	} else if reqPersonalAmount.Amount > 100000 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Personal deduction must be less than 100000")
 	}
 	newPersonalDeduct := setting.SettingPersonalDeduction(reqPersonalAmount)
 	return c.JSON(http.StatusOK, newPersonalDeduct)
@@ -53,10 +55,12 @@ func SetKReceiptPost(c echo.Context) error {
 	err := c.Validate(reqKReceiptAmount)
 	if err != nil {
 		log.Println(err.Error())
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	if reqKReceiptAmount.Amount <= 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be greater than 0")
+	} else if reqKReceiptAmount.Amount > 100000 {
+		return echo.NewHTTPError(http.StatusBadRequest, "K-receipt must be less than 100000")
 	}
 	newKReceipt := setting.SettingKReceipt(reqKReceiptAmount)
 	return c.JSON(http.StatusOK, newKReceipt)

@@ -1,4 +1,4 @@
-package intregration
+package integration
 
 import (
 	"encoding/json"
@@ -52,14 +52,15 @@ func TestTaxCalculationFunction(t *testing.T) {
 	if err := json.Unmarshal(body, &actualResponse); err != nil {
 		t.Fatalf("Failed to unmarshal response body: %v", err)
 	}
+
 	expectedResponse := struc.TaxResponse{
 		Refund: 486000,
 		TaxLevel: []struc.TaxLevel{
-			{"0-150,000", 0, 0},
-			{"150,001-500,000", 14000, 0},
-			{"500,001-1,000,000", 0, 0},
-			{"1,000,001-2,000,000", 0, 0},
-			{"2,000,001 ขึ้นไป", 0, 0},
+			{Level: "0-150,000", Tax: 0},
+			{Level: "150,001-500,000", Tax: 14000},
+			{Level: "500,001-1,000,000", Tax: 0},
+			{Level: "1,000,001-2,000,000", Tax: 0},
+			{Level: "2,000,001 ขึ้นไป", Tax: 0},
 		},
 	}
 	if !compareTaxResponses(expectedResponse, actualResponse) {

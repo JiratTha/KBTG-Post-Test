@@ -27,16 +27,16 @@ func executeSQLFile(db *sql.DB, filepath string) error {
 }
 
 func main() {
-	DatabaseUrl := os.Getenv("DatabaseUrl")
+	DatabaseUrl := os.Getenv("DATABASE_URL")
 	if DatabaseUrl == "" {
 		DatabaseUrl = "host=localhost port=5432 user=postgres password=postgres dbname=ktaxes sslmode=disable"
 	}
 	DB, _ := sql.Open("postgres", DatabaseUrl)
 	if err := executeSQLFile(DB, "./allowance.sql"); err != nil {
-		log.Fatalf("Failed to execute master_deduct.sql: %v", err)
+		log.Fatalf("Failed to execute allowance.sql: %v", err)
 	}
-	if err := executeSQLFile(DB, "./personnel_deduction.sql"); err != nil {
-		log.Fatalf("Failed to execute master_tax_level.sql: %v", err)
+	if err := executeSQLFile(DB, "./personal_deduction.sql"); err != nil {
+		log.Fatalf("Failed to execute personal_deduction.sql: %v", err)
 	}
 
 	fmt.Println("Database initialized successfully!")

@@ -8,9 +8,9 @@ import (
 // TaxCalculation calculate tax , receive personal deduction from database
 func TaxCalculation(totalIncome float64, wht float64) (taxResponse model.TaxResponse) {
 	taxAmount := model.TaxLevel{}
-	var personnelDeduction float64
-	_ = db.DB.Get(&personnelDeduction, `SELECT  amount FROM project1."personnel_deduction" `)
-	totalIncome -= personnelDeduction
+	var personalDeduction float64
+	_ = db.DB.Get(&personalDeduction, `SELECT  amount FROM project1."personal_deduction" `)
+	totalIncome -= personalDeduction
 	response := model.TaxResponse{
 		Tax:    taxAmount.Tax,
 		Refund: taxAmount.Refund,
